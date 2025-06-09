@@ -1,92 +1,7 @@
 import random
 import pandas as pd
 import math
-
-EVENTOS_ESPECIAIS = {
-    "Pewter City": "Brock",
-    "Cerulean City": "Misty",
-    "Vermilion City": "Lt. Surge",
-    "Celadon City": "Erika",
-    "Fuchsia City": "Koga",
-    "Saffron City": "Sabrina",
-    "Cinnabar Island": "Blaine",
-    "Viridian City": "Giovanni",
-    "Indigo Plateau": "Elite Four"
-}
-
-POKEMONS_INICIAIS = ["Bulbasaur", "Charmander", "Squirtle"]
-
-POKEMONS_POR_ROTA = {
-    "Pallet Town": ["Bulbasaur", "Charmander", "Squirtle", "Poliwag", "Tentacool"],
-    "Route 1": ["Pidgey", "Rattata"],
-    "Viridian City": ["Poliwag", "Tentacool"],
-    "Route 2": ["Caterpie", "Weedle", "Pidgey", "Rattata", "Mr. Mime"],
-    "Viridian Forest": ["Caterpie", "Metapod", "Weedle", "Kakuna", "Pikachu"],
-    "Route 3": ["Pidgey", "Spearow", "Jigglypuff", "Magikarp"],
-    "Mt. Moon": ["Zubat", "Paras", "Geodude", "Clefairy"],
-    "Route 4": ["Rattata", "Spearow", "Ekans", "Psyduck", "Krabby", "Goldeen"],
-    "Cerulean City": ["Psyduck", "Poliwag", "Krabby", "Goldeen", "Jynx"],
-    "Route 24": ["Caterpie", "Metapod", "Weedle", "Kakuna",
-                 "Pidgey", "Oddish", "Venonat", "Psyduck", "Abra", "Goldeen"],
-    "Route 25": ["Caterpie", "Metapod", "Weedle", "Kakuna",
-                 "Pidgey", "Oddish", "Venonat", "Psyduck", "Abra", "Goldeen"],
-    "Route 5": ["Pidgey", "Oddish", "Mankey"],
-    "Route 6": ["Pidgey", "Oddish", "Mankey", "Shellder", "Krabby"],
-    "Vermilion City": ["Poliwag", "Farfetch'd", "Shellder", "Krabby"],
-    "Diglett's Cave": ["Diglett", "Dugtrio"],
-    "Route 9": ["Rattata", "Spearow", "Ekans", "Poliwhirl", "Slowpoke", "Voltorb"],
-    "Route 10": ["Slowpoke", "Zubat", "Machop", "Geodude", "Onix"],
-    "Lavender Town": ["Gastly", "Haunter", "Cubone"],
-    "Route 8": ["Pidgey", "Ekans", "Mankey", "Growlithe"],
-    "Celadon City": ["Nidorina", "Nidorino", "Clefairy", "Poliwhirl",
-                     "Abra", "Slowpoke", "Horsea", "Scyther", "Eevee", "Porygon", "Dratini"],
-    "Saffron City": ["Hitmonlee", "Hitmonchan", "Lapras"],
-    "Route 11": ["Spearow", "Ekans", "Nidorina", "Shellder", "Drowzee", "Krabby"],
-    "Route 12": ["Pidgey", "Oddish", "Gloom", "Venonat", "Tentacool", "Krabby", "Goldeen", "Magikarp", "Snorlax"],
-    "Route 13": ["Pidgey", "Oddish", "Gloom", "Venonat", "Tentacool", "Krabby", "Goldeen", "Magikarp", "Ditto"],
-    "Route 14": ["Pidgey", "Pidgeotto", "Rattata", "Oddish", "Gloom",
-                 "Venonat", "Krabby", "Ditto"],
-    "Route 15": ["Pidgey", "Pidgeotto", "Rattata", "Oddish", "Gloom",
-                 "Venonat", "Krabby", "Ditto"],
-    "Route 16": ["Rattata", "Raticate", "Spearow", "Doduo", "Snorlax"],
-    "Route 17": ["Raticate", "Spearow", "Fearow", "Doduo", "Krabby", "Goldeen", "Magikarp"],
-    "Route 18": ["Rattata", "Raticate", "Spearow", "Fearow", "Doduo",
-                 "Krabby", "Lickitung", "Goldeen", "Magikarp"],
-    "Fuchsia City": ["Krabby", "Goldeen", "Seaking", "Magikarp"],
-    "Safari Zone": ["Nidoran♀", "Nidorina", "Nidoran♂", "Nidorino",
-                    "Paras", "Parasect", "Venonat", "Venomoth", "Psyduck",
-                    "Slowpoke", "Doduo", "Krabby", "Exeggcute",
-                    "Rhyhorn", "Chansey", "Kangaskhan", "Scyther",
-                    "Tauros", "Dratini", "Dragonair"],
-    "Power Plant": ["Pikachu", "Raichu", "Magnemite", "Magneton", "Voltorb", "Electrode", "Electabuzz", "Zapdos"],
-    "Sea Route 19": ["Poliwhirl", "Tentacool", "Shellder", "Horsea", "Goldeen", "Staryu"],
-    "Sea Route 20": ["Tentacool", "Shellder", "Horsea", "Goldeen", "Staryu"],
-    "Cinnabar Island": ["Growlithe", "Ponyta", "Slowpoke", "Seel", "Grimer",
-                        "Muk", "Shellder", "Krabby", "Electrode", "Koffing", "Weezing",
-                        "Tangela", "Horsea", "Goldeen", "Staryu",
-                        "Omanyte", "Kabuto", "Aerodactyl"],
-    "Sea Route 21": ["Pidgeotto", "Rattata", "Raticate", "Tentacool", "Shellder",
-                     "Tangela", "Horsea", "Goldeen", "Staryu"],
-    "Route 22": ["Rattata", "Spearow", "Nidoran♀", "Nidoran♂", "Poliwag", "Goldeen"],
-    "Route 23": ["Spearow", "Fearow", "Ekans", "Arbok", "Raichu",
-                 "Golbat", "Slowbro", "Kingler", "Seadra", "Seaking", "Ditto"],
-    "Victory Road": ["Zubat", "Golbat", "Venomoth", "Machop", "Machoke",
-                     "Geodude", "Graveler", "Onix", "Marowak", "Moltres"],
-}
-
-REQUISITOS_LOCAL = {
-    "Pewter City": [],
-    "Cerulean City": ["Brock"],
-    "Vermilion City": ["Misty"],
-    "Celadon City": ["Lt. Surge"],
-    "Fuchsia City": ["Erika"],
-    "Saffron City": ["Koga"],
-    "Cinnabar Island": ["Sabrina"],
-    "Viridian City": ["Blaine"],
-    "Indigo Plateau": [
-        "Brock", "Misty", "Lt. Surge", "Erika", "Koga", "Sabrina", "Blaine", "Giovanni"
-    ]
-}
+from utils import POKEMONS_INICIAIS, POKEMONS_POR_ROTA, EFICACIA_TIPOS, EVENTOS_ESPECIAIS, REQUISITOS_LOCAL
 
 class Jogador:
     def __init__(self, nome, pokedex_df, ataques_df):
@@ -121,6 +36,9 @@ class Jogador:
                 else:
                     print(f"{self.nome} perdeu para {lider}. Volta ao Centro Pokémon.")
                     return
+            if lider == "Elite Four" and venceu:
+                print(f"{self.nome} venceu a Elite Four e finalizou a jornada!")
+                self.insignias.add("Elite Four")
 
         if self._chance_encontro():
             inimigo = self._gerar_inimigo(local)
